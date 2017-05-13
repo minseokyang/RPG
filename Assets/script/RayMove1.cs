@@ -8,6 +8,9 @@ public class RayMove1 : MonoBehaviour
     public GameObject movePoint;
     public GameObject attackPoint;
 
+    public float moveSpeed = 4.0f;
+    public float turnSpeed = 360.0f;
+
     NavMeshAgent agent;
 
     void Awake()
@@ -15,6 +18,10 @@ public class RayMove1 : MonoBehaviour
         movePoint.SetActive(false);
         attackPoint.SetActive(false);
         agent = GetComponent<NavMeshAgent>();
+        agent.speed = moveSpeed;
+        agent.angularSpeed = turnSpeed;
+        agent.acceleration = 2000.0f;
+
     }
 
     void Update()
