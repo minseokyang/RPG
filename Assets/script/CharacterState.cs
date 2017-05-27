@@ -6,4 +6,5 @@
     Attack =3,
     Dead =4,
     Skill1 =5,
+    Walk=6,
 }

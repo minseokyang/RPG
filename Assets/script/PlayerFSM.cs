@@ -16,6 +16,15 @@ public class PlayerFSM: FSMBase
     public LayerMask layerMask;
 
     public float attackRange = 1.5f;
+    public float attack = 100.0f;
+    public int maxHP = 100;
+    public int currentHP = 10;
+
+    public Bounds bounds;
+
+    public Renderer renderer;
+
+    public MonsterFSM monsterFSM;
 
     public override void Awake()
     {
@@ -30,6 +39,10 @@ public class PlayerFSM: FSMBase
         agent.speed = moveSpeed;
         agent.angularSpeed = turnSpeed;
         agent.acceleration = 2000.0f;
+       
+        renderer = GetComponentInChildren<Renderer>();
+
+        bounds = GetComponentInChildren<Renderer>().bounds;
 
         layerMask = LayerMask.GetMask("Click","Block","Monster");
     }
@@ -72,6 +85,7 @@ public class PlayerFSM: FSMBase
                     agent.SetDestination(attackPoint.transform.position);
                     SetState(CharacterState.AttackRun);
                     agent.stoppingDistance = attackRange;
+                    monsterFSM = hitInfo.transform.GetComponent<MonsterFSM>();
                 }
             }
         }
@@ -135,7 +149,28 @@ public class PlayerFSM: FSMBase
         {
             yield return null;
             //stay
+            if (monsterFSM.state == CharacterState.Dead &&
+                a.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f)> 0.7)
+            {
+                attackPoint.SetActive(false);
+                SetState(CharacterState.Idle);
+                break;
+            }
         }
         //exit
+    }
+    public void OnPlayerAttack()
+    {
+        monsterFSM.ProcessDamage(attack);
+    }
+
+    public bool IsDead()
+    {
+        return state == CharacterState.Dead;
+    }
+
+    public bool RemainTime(float ratio)
+    {
+        return (a.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f > ratio);
     }
 }

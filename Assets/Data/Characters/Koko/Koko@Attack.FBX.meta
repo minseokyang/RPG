@@ -96,17 +96,9 @@ ModelImporter:
     optimizeGameObjects: 0
     motionNodeName: 
     rigImportErrors: 
-    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
-      copied configuration does not match position in animation file:\n\t'Koko_Bip001
-      L Thigh' : position error = 17.039524 mm\n\t'Koko_Bip001 R Thigh' : position
-      error = 12.698787 mm\n"
+    rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
-      might lower retargeting quality:\n\t'Koko_Bip001 Spine1' has translation animation
-      that will be discarded.\n\t'Koko_Bip001 Spine1' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'Koko_Bip001 L Thigh'
-      has translation animation that will be discarded.\n\t'Koko_Bip001 R Thigh' has
-      translation animation that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     animationCompression: 3
@@ -139,7 +131,14 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.34177214
+        functionName: OnPlayerAttack
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
