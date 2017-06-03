@@ -19,12 +19,18 @@ public class PlayerFSM: FSMBase
     public float attack = 100.0f;
     public int maxHP = 100;
     public int currentHP = 10;
+    public int exp = 0; 
+    public int gold = 0;
+    public int level = 1;
+
 
     public Bounds bounds;
 
     public Renderer renderer;
 
     public MonsterFSM monsterFSM;
+
+    EffectManager effectManager;
 
     public override void Awake()
     {
@@ -41,6 +47,7 @@ public class PlayerFSM: FSMBase
         agent.acceleration = 2000.0f;
        
         renderer = GetComponentInChildren<Renderer>();
+        effectManager = GetComponentInChildren<EffectManager>();
 
         bounds = GetComponentInChildren<Renderer>().bounds;
 
@@ -54,6 +61,16 @@ public class PlayerFSM: FSMBase
 
     void Update()
     {
+
+        if (state == CharacterState.Skill1 || IsDead())
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SetState(CharacterState.Skill1);
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -149,8 +166,18 @@ public class PlayerFSM: FSMBase
         {
             yield return null;
             //stay
+
+            MoveUtil.RotateBurst(transform, attackPoint.transform);
+
+            if (Vector3.Distance(transform.position,
+                attackPoint.transform.position) > attackRange && RemainTime(0.7f))
+            {
+                SetState(CharacterState.AttackRun);
+                break;
+            }
+
             if (monsterFSM.state == CharacterState.Dead &&
-                a.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f)> 0.7)
+                (a.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f) > 0.7)
             {
                 attackPoint.SetActive(false);
                 SetState(CharacterState.Idle);
@@ -172,5 +199,95 @@ public class PlayerFSM: FSMBase
     public bool RemainTime(float ratio)
     {
         return (a.GetCurrentAnimatorStateInfo(0).normalizedTime % 1.0f > ratio);
+    }
+
+    public void ProcessDamage(float damage)
+    {
+        currentHP -= (int)damage;
+
+        if (currentHP <= 0)
+        {
+            SetState(CharacterState.Dead);
+            currentHP = 0;
+        }
+       
+    }
+    IEnumerator Dead()
+    {
+        while (state == CharacterState.Dead)
+        {
+            yield return null;
+        }
+
+    }
+
+    public void StartEffect(string effectName)
+    {
+        effectManager.StartEffect(effectName);
+    }
+
+
+    public IEnumerator Skill1()
+    {
+        //enter
+        agent.isStopped = true;
+        agent.SetDestination(transform.position);
+        movePoint.SetActive(false);
+        attackPoint.SetActive(false);
+
+        while (state == CharacterState.Skill1)
+        {
+            yield return null;
+            //stay
+//            if (RemainTime(0.9f) &&
+//                state == CharacterState.Skill1)
+//           {
+//                agent.isStopped = false;
+//                SetState(CharacterState.Idle);
+//               break;
+//            }
+            foreach (Collider monster in Physics.OverlapSphere(transform.position, 5.0f))
+            {
+                if (monster.gameObject.layer == LayerMask.NameToLayer("Monster"))
+                {
+                    monster.SendMessage("ProcessDamage", 100.0f,SendMessageOptions.DontRequireReceiver);
+                }
+            }
+        }
+        //exit
+
+    }
+    public void OnSkill1Attack()
+    {
+        foreach (GameObject monster in GameObject.FindGameObjectWithTag("Monster"))
+        {
+            if (Vector3.Distance(transform.position, monster.transform.position) <= 5.0f)
+            {
+                monster.GetComponent<MonsterFSM>().ProcessDamage(100.0f);
+            }
+        }
+    }
+
+    public void Skill1End()
+    {
+        SetState(CharacterState.Idle);
+        agent.isStopped = false;
+    }
+    public void GainExp(int gainExp)
+    {
+        exp += gainExp;
+
+        CheckLevel();
+    }
+    public void GainGold(int gainGold)
+    {
+        gold += gainGold;
+    }
+    public void CheckLevel1()
+    {
+        if (exp % 30 == 0)
+        {
+            StartEffect("LevelUp");
+        }
     }
 }

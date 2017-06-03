@@ -1,17 +1,10 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\script\MonsterFSM.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\script\GobleFSM.cs">
     <Files>
-      <File FileName="Assets\script\PlayerMove1.cs" Line="1" Column="1" />
-      <File FileName="Assets\script\CameraMove.cs" Line="1" Column="1" />
-      <File FileName="Assets\script\CharacterState.cs" Line="1" Column="1" />
-      <File FileName="Assets\script\CoroutineTest.cs" Line="1" Column="1" />
-      <File FileName="Assets\script\ExampleClass.cs" Line="1" Column="1" />
-      <File FileName="Assets\script\FSMBase.cs" Line="1" Column="1" />
-      <File FileName="Assets\script\PlayerFSM.cs" Line="174" Column="81" />
-      <File FileName="Assets\script\RayMove1.cs" Line="1" Column="1" />
-      <File FileName="Assets\script\MonsterFSM.cs" Line="174" Column="6" />
-      <File FileName="Assets\script\SlimeFSM.cs" Line="1" Column="1" />
+      <File FileName="Assets\script\PlayerFSM.cs" Line="1" Column="1" />
+      <File FileName="Assets\script\MonsterFSM.cs" Line="117" Column="12" />
+      <File FileName="Assets\script\GobleFSM.cs" Line="21" Column="14" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

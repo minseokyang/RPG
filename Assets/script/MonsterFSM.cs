@@ -12,6 +12,9 @@ public class MonsterFSM : FSMBase
     public float attack = 10.0f;
     public int maxHP = 10;
     public int currentHP = 10;
+    public int gainExp = 10;
+    public int gainGold = 10;
+    public int level = 1;
 
     public Transform waypoint;
     [HideInInspector]
@@ -50,7 +53,14 @@ public class MonsterFSM : FSMBase
 
     public override void OnEnable()
     {
+        SetState(CharacterState.Idle);
+        currentHP = maxHP;
+        GetComponent<CharacterController>().enabled = true;
+        agent.enabled = true;
+        transform.position = waypoints[0].position;
+
         base.OnEnable();
+
     }
 
 
@@ -73,7 +83,7 @@ public class MonsterFSM : FSMBase
                 break;
             }
 
-            if (IsDectectPlayer())
+            if (IsDectectPlayer() && !playerFSM.IsDead())
             {
                 SetState(CharacterState.Run);
                 break;
@@ -107,7 +117,7 @@ public class MonsterFSM : FSMBase
         }
         //exit
     }
-    IEnumerator Walk()
+    public virtual IEnumerator Walk()
     {
         //enter
         Transform target = waypoints[Random.Range(0, waypoints.Length)];
@@ -142,9 +152,17 @@ public class MonsterFSM : FSMBase
         {
             yield return null;
             //stay
+
+            MoveUtil.RotateBurst(transform, player);
+
             if (Vector3.Distance(transform.position, player.position) > attackRange)
             {
                 SetState(CharacterState.Run);
+                break;
+            }
+            if (playerFSM.IsDead())
+            {
+                SetState(CharacterState.Idle);
                 break;
             }
         }
@@ -152,16 +170,24 @@ public class MonsterFSM : FSMBase
     }
     IEnumerator Dead()
     {
-        //enter
+        playerFSM.GainGold(gainGold);
+        playerFSM.GainExp(gainExp);
 
-        while (state == CharacterState.Dead)
-        {
-            yield return null;
-            //stay
-           
-        }
-        //exit
+        GetComponent<CharacterController>().enabled = false;
+        agent.enabled = false;
+
+        yield return new WaitForSeconds(3.0f);
+
+        gameObject.SetActive(false);
+
+        Invoke("Respawn", 3.0f);
+
     }
+    void Respawn()
+    {
+        gameObject.SetActive(true);
+    }
+
     public void ProcessDamage(float damage)
     {
         currentHP -= (int)damage;
@@ -171,5 +197,15 @@ public class MonsterFSM : FSMBase
             SetState(CharacterState.Dead);
             currentHP = 0;
         }
+        else
+        {
+            SetState(CharacterState.Run);
+            MoveUtil.RotateBurst(transform, player);
+        }
+
+    }
+    public void OnMosterAttack()
+    {
+        playerFSM.ProcessDamage(attack);
     }
 }
